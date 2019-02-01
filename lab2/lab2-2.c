@@ -31,17 +31,19 @@ unsigned int bunnyVertexArrayObjID;
 	// Reference to shader program
 GLuint program;
 
+GLuint tex;
+
 Model *m;
 
 void init(void)
 	{
 		m = LoadModel("bunnyplus.obj");
+		LoadTGATextureSimple("maskros512.tga", &tex);
 		// vertex buffer object, used for uploading the geometry
 		unsigned int bunnyVertexBufferObjID;
 		unsigned int bunnyIndexBufferObjID;
 		unsigned int bunnyNormalBufferObjID;
 		unsigned int bunnyTexCoordBufferObjID;
-
 
 		dumpInfo();
 
@@ -53,8 +55,10 @@ void init(void)
 		printError("GL inits");
 
 		// Load and compile shader
-		program = loadShaders("lab2-1.vert", "lab2-1.frag");
+		program = loadShaders("lab2-2.vert", "lab2-2.frag");
 		printError("init shader");
+
+
 
 		// Upload geometry to the GPU:
 
@@ -65,6 +69,8 @@ void init(void)
 		glGenBuffers(1, &bunnyNormalBufferObjID);
 		glGenBuffers(1, &bunnyTexCoordBufferObjID);
 		glBindVertexArray(bunnyVertexArrayObjID);
+
+		glBindTexture(GL_TEXTURE_2D, tex);
 
 		// VBO for vertex data
 		glBindBuffer(GL_ARRAY_BUFFER, bunnyVertexBufferObjID);
@@ -88,6 +94,8 @@ void init(void)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bunnyIndexBufferObjID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m->numIndices*sizeof(GLuint), m->indexArray, GL_STATIC_DRAW);
+
+		glUniform1i(glGetUniformLocation(program, "texUnit"), 0);
 
 		// End of upload of geometry
 

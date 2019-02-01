@@ -17,8 +17,16 @@
 #include "loadobj.h"
 #include <math.h>
 
+#define near 1.0
+#define far 30.0
+#define right 0.5
+#define left -0.5
+#define top 0.5
+#define bottom -0.5
+
 // Globals
-mat4 RotationY;
+mat4 rot, trans, proj, projTrans;
+
 // Data would normally be read from files
 
 GLint fps = 50;
@@ -31,17 +39,19 @@ unsigned int bunnyVertexArrayObjID;
 	// Reference to shader program
 GLuint program;
 
+GLuint tex;
+
 Model *m;
 
 void init(void)
 	{
 		m = LoadModel("bunnyplus.obj");
+		LoadTGATextureSimple("maskros512.tga", &tex);
 		// vertex buffer object, used for uploading the geometry
 		unsigned int bunnyVertexBufferObjID;
 		unsigned int bunnyIndexBufferObjID;
 		unsigned int bunnyNormalBufferObjID;
 		unsigned int bunnyTexCoordBufferObjID;
-
 
 		dumpInfo();
 
@@ -53,8 +63,10 @@ void init(void)
 		printError("GL inits");
 
 		// Load and compile shader
-		program = loadShaders("lab2-1.vert", "lab2-1.frag");
+		program = loadShaders("lab2-3.vert", "lab2-3.frag");
 		printError("init shader");
+
+
 
 		// Upload geometry to the GPU:
 
@@ -65,6 +77,8 @@ void init(void)
 		glGenBuffers(1, &bunnyNormalBufferObjID);
 		glGenBuffers(1, &bunnyTexCoordBufferObjID);
 		glBindVertexArray(bunnyVertexArrayObjID);
+
+		glBindTexture(GL_TEXTURE_2D, tex);
 
 		// VBO for vertex data
 		glBindBuffer(GL_ARRAY_BUFFER, bunnyVertexBufferObjID);
@@ -89,6 +103,14 @@ void init(void)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bunnyIndexBufferObjID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m->numIndices*sizeof(GLuint), m->indexArray, GL_STATIC_DRAW);
 
+		trans = T(0,0,-2);
+		proj = frustum(left,right,bottom,top,near,far);
+
+		projTrans = Mult(proj, trans);
+
+		glUniformMatrix4fv(glGetUniformLocation(program, "projTrans"), 1, GL_TRUE, projTrans.m);
+		glUniform1i(glGetUniformLocation(program, "texUnit"), 0);
+
 		// End of upload of geometry
 
 		printError("init arrays");
@@ -106,8 +128,8 @@ void init(void)
 		glDrawElements(GL_TRIANGLES, m->numIndices, GL_UNSIGNED_INT, 0L);
 
 		time = (GLfloat)glutGet(GLUT_ELAPSED_TIME)/1000;
-		RotationY = Ry(time);
-		glUniformMatrix4fv(glGetUniformLocation(program, "RotationY"), 1, GL_TRUE, RotationY.m);
+		rot = Ry(time);
+		glUniformMatrix4fv(glGetUniformLocation(program, "rot"), 1, GL_TRUE, rot.m);
 		glUniform1f(glGetUniformLocation(program, "time"), time);
 
 		printError("display");
