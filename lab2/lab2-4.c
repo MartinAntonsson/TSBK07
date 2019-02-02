@@ -46,7 +46,7 @@ Model *m;
 
 void init(void)
 	{
-		m = LoadModel("bunnyplus.obj");
+		m = LoadModel("teapot.obj");
 		LoadTGATextureSimple("maskros512.tga", &tex);
 		// vertex buffer object, used for uploading the geometry
 		unsigned int bunnyVertexBufferObjID;
@@ -59,7 +59,7 @@ void init(void)
 		// GL inits
 		glClearColor(0.0,0.0,0.0,0);
 		glCullFace(GL_BACK);
-		glDisable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		printError("GL inits");
 
@@ -104,7 +104,7 @@ void init(void)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bunnyIndexBufferObjID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m->numIndices*sizeof(GLuint), m->indexArray, GL_STATIC_DRAW);
 
-		p = SetVector(0,1,1.5);
+		p = SetVector(0,20,20);
 		l = SetVector(0,0,0);
 		v = SetVector(0,1,0);
 		cam = lookAtv(p, l, v);

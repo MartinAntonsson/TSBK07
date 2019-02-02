@@ -50,8 +50,8 @@ void init(void)
 		// GL inits
 		glClearColor(0.0,0.0,0.0,0);
 		glCullFace(GL_BACK);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 		printError("GL inits");
 
 		// Load and compile shader
